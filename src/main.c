@@ -50,9 +50,12 @@ void calling_lua_function(void){
     const int num_of_arguments = 2;
     const int num_of_returns = 1;
     // esse zero como ultimo argumento é referente a tratativas de erro.
-    lua_pcall(L, num_of_arguments, num_of_returns, 0); // call the function
+    if(lua_pcall(L, num_of_arguments, num_of_returns, 0) != LUA_OK){ // call the function
+      // log the error
+    } else{
     lua_Number pitagoras_result = lua_tonumber(L, -1); // get the result from the stack
     printf("Resultado de pitagoras é: %.2f", (float)pitagoras_result);
+    }
   }
   lua_close(L);
 }
