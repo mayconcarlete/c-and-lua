@@ -38,9 +38,27 @@ void lua_stack_example(void){
   lua_close(L);
 }
 
+void calling_lua_function(void){
+  lua_State* L = luaL_newstate();
+  luaL_dofile(L, "./scripts/pitagoras.lua"); // get and parse pitagoras file
+  lua_getglobal(L, "pitagoras"); // get the global variable pitagoras and push to stack
+  if(lua_isfunction(L, -1)){ // make sure that the top value on stack is a function
+    lua_pushnumber(L, 3); // first function argument
+    lua_pushnumber(L, 4); // second function argument
+    const int num_of_arguments = 2;
+    const int num_of_returns = 1;
+    // esse zero como ultimo argumento é referente a tratativas de erro.
+    lua_pcall(L, num_of_arguments, num_of_returns, 0); // call the function
+    lua_Number pitagoras_result = lua_tonumber(L, -1); // get the result from the stack
+    printf("Resultado de pitagoras é: %.2f", (float)pitagoras_result);
+  }
+  lua_close(L);
+}
+
 int main(int argc, char **argv){
   // lua_example_dofile();
   // lua_example_get_var();
   // lua_stack_example();
+  calling_lua_function();
   return 0;
 }
