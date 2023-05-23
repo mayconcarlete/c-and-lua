@@ -40,7 +40,9 @@ void lua_stack_example(void){
 
 void calling_lua_function(void){
   lua_State* L = luaL_newstate();
-  luaL_dofile(L, "./scripts/pitagoras.lua"); // get and parse pitagoras file
+  if(luaL_dofile(L, "./scripts/pitagoras.lua") != LUA_OK){
+    luaL_error(L, "Error: %s \n", lua_tostring(L, -1));
+  } // get and parse pitagoras file if its ok proceed
   lua_getglobal(L, "pitagoras"); // get the global variable pitagoras and push to stack
   if(lua_isfunction(L, -1)){ // make sure that the top value on stack is a function
     lua_pushnumber(L, 3); // first function argument
