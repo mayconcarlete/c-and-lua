@@ -60,10 +60,43 @@ void calling_lua_function(void){
   lua_close(L);
 }
 
+int native_pitagoras(lua_State* L){
+  lua_Number b = lua_tonumber(L, -1); // b first because its on top of the stack
+  lua_Number a = lua_tonumber(L, -2); // a the second item from the stack
+
+  lua_Number result = a*a + b*b;
+  lua_pushnumber(L, result);
+  return 1; // how manu values the function is returning as result to the stack
+}
+
+void calling_c_function_from_lua(void){
+  lua_State* L = luaL_newstate();
+
+  lua_pushcfunction(L, native_pitagoras);
+  lua_setglobal(L, "native_pitagoras"); // expose the name of the function to lua script.
+
+  luaL_dofile(L, "./scripts/pitagoras-c-native.lua"); // load the lua file
+  lua_getglobal(L, "pitagoras"); // get the desired function to execute
+
+  if(lua_isfunction(L, -1)){ // check if is a function
+    lua_pushnumber(L, 3); // 1st function argument
+    lua_pushnumber(L, 4); // 2nd function argument
+
+    const int NUM_ARGS = 2;
+    const int NUM_RETURNS = 1;
+    lua_pcall(L, NUM_ARGS, NUM_RETURNS, 0); // call the function
+    lua_Number pitagoras_result = lua_tonumber(L, -1);
+
+    printf("Native pitagoras result: %.2f\n", (float)pitagoras_result);
+  }
+  lua_close(L);
+}
+
 int main(int argc, char **argv){
   // lua_example_dofile();
   // lua_example_get_var();
   // lua_stack_example();
-  calling_lua_function();
+  // calling_lua_function();
+  calling_c_function_from_lua();
   return 0;
 }
