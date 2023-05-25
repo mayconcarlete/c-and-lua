@@ -92,11 +92,56 @@ void calling_c_function_from_lua(void){
   lua_close(L);
 }
 
+typedef struct rectangle2d {
+  int x;
+  int y;
+  int width;
+  int height;
+} rectangle;
+
+int create_rectangle(lua_State* L){
+  rectangle* rect = (rectangle*)lua_newuserdata(L, sizeof(rectangle));
+  rect->x = 0;
+  rect->y = 0;
+  rect->width = 0;
+  rect->height = 0;
+  return 1;
+}
+
+int change_rectangle_size(lua_State* L){
+  rectangle* rect = (rectangle*)lua_touserdata(L, -3);
+  rect->width = (int)lua_tonumber(L, -2);
+  rect->height = (int)lua_tonumber(L, -1);
+  return 0; // does not return anything to stack
+}
+
+void lua_example_userdata(void){
+  lua_State* L = luaL_newstate();;
+  // expose a function
+  lua_pushcfunction(L, create_rectangle);
+  lua_setglobal(L, "create_rectangle");
+
+  lua_pushcfunction(L, change_rectangle_size);
+  lua_setglobal(L, "change_rectangle_size");
+
+  luaL_dofile(L, "./scripts/rectangle.lua");
+  lua_getglobal(L, "square");
+
+  if(lua_isuserdata(L, -1)){
+    rectangle* r = (rectangle* )lua_touserdata(L, -1);
+    printf("We got back our rectangle: width: %d height %d", r->width, r->height);
+  } else {
+    printf("Errorr trying to execute the file");
+  }
+  lua_close(L);
+}
+
 int main(int argc, char **argv){
   // lua_example_dofile();
   // lua_example_get_var();
   // lua_stack_example();
   // calling_lua_function();
-  calling_c_function_from_lua();
+  // calling_c_function_from_lua();
+  lua_example_userdata();
   return 0;
 }
