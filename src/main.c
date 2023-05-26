@@ -136,12 +136,29 @@ void lua_example_userdata(void){
   lua_close(L);
 }
 
+void lua_table_example(void){
+  lua_State* L = luaL_newstate();
+
+if(luaL_dofile(L, "./scripts/config-table.lua") == LUA_OK){
+  lua_getglobal(L, "config_table");
+  if(lua_istable(L, -1)){
+    lua_getfield(L, -1, "window_width");
+    printf("The window width defined in the lua table is: %s\n", lua_tostring(L, -1));
+    // lua_setfield(L, -1, "700");
+  }
+} else {
+  luaL_error(L, "Error: %s \n", lua_tostring(L, -1));
+}
+  lua_close(L);
+}
+
 int main(int argc, char **argv){
   // lua_example_dofile();
   // lua_example_get_var();
   // lua_stack_example();
   // calling_lua_function();
   // calling_c_function_from_lua();
-  lua_example_userdata();
+  // lua_example_userdata();
+  lua_table_example();
   return 0;
 }
