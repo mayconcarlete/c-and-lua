@@ -1,92 +1,52 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <SDL2/SDL.h>
+
 #include "../lib/lua/src/lua.h"
 #include "../lib/lua/src/lualib.h"
 #include "../lib/lua/src/lauxlib.h"
 
-#define FALSE 0
-#define TRUE 1
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 640
 
+void add_variable_to_lua_global(){
+// pass a new variable with value 42 to lua gloabal state;
+  lua_State* L = luaL_newstate();
 
-SDL_Window* window = NULL;
-SDL_Renderer* renderer = NULL;
-int is_running = FALSE;
+  luaL_dostring(L, "x = 42");
 
-int initialize_window(void){
-  if(SDL_Init(SDL_INIT_EVERYTHING) != 0){
-    fprintf(stderr, "Erro initializing SDL. \n");
-    return FALSE;
-  }
-  window = SDL_CreateWindow(
-    "Minha janela",
-    SDL_WINDOWPOS_CENTERED,
-    SDL_WINDOWPOS_CENTERED,
-    WINDOW_WIDTH,
-    WINDOW_HEIGHT,
-    SDL_WINDOW_RESIZABLE
-  );
+  lua_getglobal(L, "x");
 
-  if(!window){
-    fprintf(stderr, "Error creating SDL. \n");
-    return FALSE;
-  }
-  renderer = SDL_CreateRenderer(
-    window,
-    -1,
-    0
-  );
-  if(!renderer){
-    fprintf(stderr, "Error creating renderer. \n");
-    return FALSE;
-  }
-  return TRUE;
+  lua_Number num = lua_tonumber(L, 1);
+  printf("Number is: %d\n", (int)num);
+
+  int sizeStack = lua_gettop(L);
+  printf("Size of the stack: %d\n", sizeStack);
+
+  lua_close(L);
 }
 
-void process_input(void){
-  SDL_Event event;
-  SDL_PollEvent(&event);
-  switch (event.type)
-  {
-  case SDL_QUIT: {
-    is_running = FALSE;
-    break;
-  }
-  case SDL_KEYDOWN:{
-    if(event.key.keysym.sym == SDLK_ESCAPE){
-      is_running = FALSE;
-    }
-  }
+void push_number_to_lua_stack(){
+// push the number 42, 52, 62 to the stack;
+  lua_State*L = luaL_newstate();
 
-  default:
-    break;
-  }
+  lua_pushnumber(L, 42);
+  lua_pushnumber(L, 52);
+  lua_pushnumber(L, 62);
+
+  // stack
+  lua_Number a = lua_tonumber(L, -1); // 62
+  lua_Number b = lua_tonumber(L, -2); // 52
+  lua_Number c = lua_tonumber(L, -3); // 42
+
+  printf("a: %d b: %d c: %d\n",(int)a, (int)b, (int)c);
+  
+  int stackSize = lua_gettop(L);
+  printf("Stack size: %d\n", stackSize);
+  
+  lua_close(L);
 }
 
-void update(void){
+int main(){
 
-}
 
-void render(void){
 
-}
-
-void destroy_window(void){
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
-  SDL_Quit();
-}
-
-int main(int argc, char *argv[]){
-  is_running = initialize_window();
-  printf("False: %d\n", is_running);
-  while(is_running){
-    process_input();
-    update();
-    render();
-  }
-  destroy_window();
   return 0;
 }
