@@ -155,16 +155,16 @@ typedef struct {
 // }
 
 int Add_Entity_Lua(lua_State* L){
-  printf("de\n");
-  Entity* entity = (Entity*)lua_newuserdata(L, sizeof(Entity));
-
   lua_Number signature = lua_tonumber(L, -1);
   lua_Number id = lua_tonumber(L, -2);
+
+  Entity* entity = (Entity*)lua_newuserdata(L, sizeof(Entity));
+
 
   entity->id = id;
   entity->signature = signature;  
 
-  return 0;
+  return 1;
 }
 
 void lua_test(EntityManager* entityManager){
@@ -180,9 +180,11 @@ void lua_test(EntityManager* entityManager){
 
   if(lua_isfunction(L, -1)){
       printf("é sim!\n");
-      lua_pcall(L, 2, 0, 0);
-    // if(lua_isuserdata(L, -1)){
-    // }
+      lua_pcall(L, 0, 1, 0);
+    if(lua_isuserdata(L, -1)){
+      Entity* entity = (Entity*)lua_touserdata(L, -1);
+      printf("Valor: id: %d signature: %d!\n", entity->id, entity->signature);
+    }
   }
 
   lua_close(L);
