@@ -104,9 +104,56 @@ void call_c_function_from_lua(){
   lua_close(L);
 }
 
-int main(){
+// part of lua_types example above;
+typedef struct {
+  int x;
+  int y;
+} Sprite;
 
-  call_c_function_from_lua();
+int Create_Sprite(lua_State* L){
+  Sprite* sprite = (Sprite*)lua_newuserdata(L, sizeof(Sprite));
+  
+  sprite->x = 2;
+  sprite->y = 3;
+
+  return 1;
+}
+
+void lua_types(){
+  // creates your own type in lua
+  lua_State* L = luaL_newstate();
+
+  lua_pushcfunction(L, Create_Sprite);
+  lua_setglobal(L, "create_sprite");
+
+  luaL_dofile(L, "./scripts/lua-types.lua");
+  lua_getglobal(L, "Sprite");
+
+  if(lua_isuserdata(L, -1)){
+    printf("We got a sprite from lua.\n");
+    Sprite* sprite = (Sprite*)lua_touserdata(L, -1);
+    printf("Sprite values. X: %d - Y: %d\n", sprite->x, sprite->y);
+  } else {
+    printf("We din't get a sprite from lua.\n");
+  }
+  lua_close(L);
+}
+
+int main(){
+  /*
+    What you should know about embbeded lua
+    1 - Create and Destroy(close) the lua's state;
+    2 - Get global numbers from lua;
+    3 - How to use the lua stack from C api;
+    4 - call lua functions from C;
+    5 - Bind and call C functions from lua
+    obs: para resolver o problema do entity manager uma ideia seria:
+    - criar um userdata to tipo entitymanager
+    - passar o endereço criado para a stack do lua
+    - fazer o cast do endereço dentro da funcao
+    - adicionar a entity
+  */
+  lua_types();
 
   return 0;
 }

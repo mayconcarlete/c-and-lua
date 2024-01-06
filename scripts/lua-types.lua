@@ -1,0 +1,1 @@
+Sprite = create_sprite()
