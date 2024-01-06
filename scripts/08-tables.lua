@@ -1,4 +1,9 @@
 Person = {
     name = "Maycon",
-    lastName = "Carlete"
+    attrs = {
+        lastName = "Carlete",
+        age = 33
+    }
 }
+
+print(Person.attrs.age)

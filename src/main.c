@@ -203,13 +203,29 @@ void Table_Example(){
   if(luaL_dofile(L, "./scripts/08-tables.lua") != LUA_OK){
     printf("Error reading the file!\n");
   }
-  
+  // we CAN use lua_getfield instead of this method.
   lua_getglobal(L, "Person"); // get the variable
   lua_pushstring(L, "name"); // send to the stack the desired property;
   lua_gettable(L, -2); // it will access the property person and get the value for name = Maycon
 
   if(lua_isstring(L, -1)){
     printf("Valor da propriedade: %s!\n", (char*)lua_tostring(L, -1));
+    // test to get inherited values.
+    lua_getglobal(L, "Person");
+    lua_getfield(L, -1, "attrs");
+
+    if(lua_istable(L, -1)){
+      lua_getfield(L, -1, "age");
+      if(lua_isnumber(L, -1)){
+      printf("Age's value: %d\n", (int)lua_tointeger(L, -1));
+
+      } else {
+      printf("Error getting the property age!\n");
+      }
+    } else {
+      printf("Error getting age property!\n");
+    }
+
   } else {
     printf("Value is not a string!\n");
   }
