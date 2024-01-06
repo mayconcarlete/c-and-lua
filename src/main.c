@@ -139,6 +139,55 @@ void lua_types(){
   lua_close(L);
 }
 
+typedef struct {
+  int id;
+  int signature;
+} Entity;
+
+typedef struct {
+  int entitiesCounter;
+  int listSize;
+  Entity* listOfEntities;
+} EntityManager;
+
+// void Add_Entity(EntityManager* entityManager, int id, int signature){
+
+// }
+
+int Add_Entity_Lua(lua_State* L){
+  printf("de\n");
+  Entity* entity = (Entity*)lua_newuserdata(L, sizeof(Entity));
+
+  lua_Number signature = lua_tonumber(L, -1);
+  lua_Number id = lua_tonumber(L, -2);
+
+  entity->id = id;
+  entity->signature = signature;  
+
+  return 0;
+}
+
+void lua_test(EntityManager* entityManager){
+  lua_State* L = luaL_newstate();
+  lua_pushcfunction(L, Add_Entity_Lua);
+  lua_setglobal(L, "add_entity_lua");
+
+  if(luaL_dofile(L, "./scripts/entity.lua") != LUA_OK){
+    printf("Error laoding file!\n");
+  }
+
+  lua_getglobal(L, "CreateEntity");
+
+  if(lua_isfunction(L, -1)){
+      printf("é sim!\n");
+      lua_pcall(L, 2, 0, 0);
+    // if(lua_isuserdata(L, -1)){
+    // }
+  }
+
+  lua_close(L);
+}
+
 int main(){
   /*
     What you should know about embbeded lua
@@ -153,7 +202,13 @@ int main(){
     - fazer o cast do endereço dentro da funcao
     - adicionar a entity
   */
-  lua_types();
+  EntityManager* manager = (EntityManager*)calloc(1, sizeof(EntityManager));
+  manager->entitiesCounter = 0;
+  manager->listSize = 0;
+  manager->listOfEntities = (Entity*)calloc(2, sizeof(Entity));
 
+  lua_test(manager);
+  free(manager->listOfEntities);
+  free(manager);
   return 0;
 }
