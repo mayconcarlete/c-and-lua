@@ -166,7 +166,14 @@ int Add_Entity_Lua(lua_State* L){
 
   return 1;
 }
+  // EntityManager* manager = (EntityManager*)calloc(1, sizeof(EntityManager));
+  // manager->entitiesCounter = 0;
+  // manager->listSize = 0;
+  // manager->listOfEntities = (Entity*)calloc(2, sizeof(Entity));
 
+  // lua_test(manager);
+  // free(manager->listOfEntities);
+  // free(manager);
 void lua_test(EntityManager* entityManager){
   lua_State* L = luaL_newstate();
   lua_pushcfunction(L, Add_Entity_Lua);
@@ -190,6 +197,27 @@ void lua_test(EntityManager* entityManager){
   lua_close(L);
 }
 
+void Table_Example(){
+  lua_State* L = luaL_newstate();
+
+  if(luaL_dofile(L, "./scripts/08-tables.lua") != LUA_OK){
+    printf("Error reading the file!\n");
+  }
+  
+  lua_getglobal(L, "Person"); // get the variable
+  lua_pushstring(L, "name"); // send to the stack the desired property;
+  lua_gettable(L, -2); // it will access the property person and get the value for name = Maycon
+
+  if(lua_isstring(L, -1)){
+    printf("Valor da propriedade: %s!\n", (char*)lua_tostring(L, -1));
+  } else {
+    printf("Value is not a string!\n");
+  }
+
+
+  lua_close(L);
+}
+
 int main(){
   /*
     What you should know about embbeded lua
@@ -204,13 +232,10 @@ int main(){
     - fazer o cast do endereço dentro da funcao
     - adicionar a entity
   */
-  EntityManager* manager = (EntityManager*)calloc(1, sizeof(EntityManager));
-  manager->entitiesCounter = 0;
-  manager->listSize = 0;
-  manager->listOfEntities = (Entity*)calloc(2, sizeof(Entity));
 
-  lua_test(manager);
-  free(manager->listOfEntities);
-  free(manager);
+ 
+  Table_Example();
+
+
   return 0;
 }
