@@ -30,7 +30,7 @@ EntityManager* Create_Entity_Manager(){
 Entity* Add_Entity_By_Manager(EntityManager* entityManager, int id, int signature){
     entityManager->listOfEntities[entityManager->entityCounter].id = id;
     entityManager->listOfEntities[entityManager->entityCounter].signature = signature;
-
+    entityManager->entityCounter++;
     return &entityManager->listOfEntities[entityManager->entityCounter];
 }
 
@@ -66,7 +66,8 @@ int main(){
     printf("Error: %s\n", (char*)lua_tostring(L, -1));
   }
 
-
+  printf("Entity Counter: %d - List Size: %d\n", entityManager->entityCounter,entityManager->listSize );
+  printf("Valores em entity manager: id: %d - signature: %d\n", entityManager->listOfEntities[0].id, entityManager->listOfEntities[0].signature);
   free(entityManager->listOfEntities);
   free(entityManager);
   lua_close(L);
