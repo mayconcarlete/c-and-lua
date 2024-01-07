@@ -218,7 +218,6 @@ void Table_Example(){
       lua_getfield(L, -1, "age");
       if(lua_isnumber(L, -1)){
       printf("Age's value: %d\n", (int)lua_tointeger(L, -1));
-
       } else {
       printf("Error getting the property age!\n");
       }
@@ -229,6 +228,20 @@ void Table_Example(){
   } else {
     printf("Value is not a string!\n");
   }
+
+  lua_getglobal(L, "Person");
+  lua_pushstring(L, "attrs");
+  lua_gettable(L, -2);
+  if(lua_istable(L, -1)){
+    printf("Is table!\n");
+    lua_pushstring(L, "lastName");
+    lua_gettable(L, -2);
+    if(lua_isstring(L, -1)){
+      printf("Is string! Value: %s\n", (char*)lua_tostring(L, -1));
+    }
+  }
+
+
 
 
   lua_close(L);
