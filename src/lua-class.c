@@ -63,7 +63,6 @@ int main(){
   if(lua_isfunction(L, -1)){
     printf("Aqui ainda vai\n");
     lua_pcall(L, 0, 0, 0);
-    printf("Error: %s\n", (char*)lua_tostring(L, -1));
   }
 
   printf("Entity Counter: %d - List Size: %d\n", entityManager->entityCounter,entityManager->listSize );
