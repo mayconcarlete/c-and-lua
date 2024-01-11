@@ -62,6 +62,22 @@
 -- mustang.print_acceleration(mustang)
 -- mustang:print_velocity()
 
-test = function()
-  return Add_Entity(88, 99)
+
+Metatable = {}
+
+Metatable.__index = Metatable
+
+function Metatable:new(Name, lastName)
+  self = setmetatable({}, Metatable)
+  self.Name = Name
+  self.lastName = lastName
+  return self
 end
+
+function Metatable.getFullName(self)
+  return self.Name
+end
+
+maycon = Metatable:new("Maycon", "Carlete")
+
+print(maycon:getFullName())
